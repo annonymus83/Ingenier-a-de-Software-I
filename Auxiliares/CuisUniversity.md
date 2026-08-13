@@ -84,7 +84,7 @@ Existen 3 tipos de mensajes
     ![]()<img src="Imagenes/keywords.png" width="40%">
 
 > [!IMPORTANT]
-> **¿En que orden se envian los mensajes?**
+> **¿En que orden se envian los mensajes?**\
 > Se envian de **Izquierda a Derecha -> empezando** por los unarios, luego binarios y por último los keywords.
 
 **OBS**-----------------------------------------------------------------------------------------------\
@@ -114,6 +114,168 @@ Lo enviamos e inspeccionamos y veremos que nos pide un colaborador -> Verdadero 
 
 Continuar con los otros ;)
 
+
+## Testing
+
+### Creación Tests
+Veamos como crear tests en el browser, de esta forma nos aseguramos que nuestra implementación sea correcta.
+
+1. Creamos un objeto en (2) -> `add object...(a)` y lo llamamos `AlgebraDeBooleTest`
+2. Al igual que en Falso y Verdadero vamos a implementar nuestros mensajes. Para que un test sea reconocio como tal es importante que el **nombre inicie con test**:\
+    ![]()<img src="Imagenes/tests.png" width="50%">
+3. Ejecutamos `accept and send` o `[alt + t]`
+
+Y veremos que los tests corrieron con éxito! Veamos que sucede con el siguiente test:
+
+```
+testVerdaderoYFalsoEsFalso
+    Assert that: Verdadero y: False isEqualTo Falso
+
+Nos devuelve !error.
+Esto se debe a que no sabe cual es el primer colaborador. Corregimos con (): 
+
+testVerdaderoYFalsoEsFalso
+    Assert that: (Verdadero y: False) isEqualTo Falso
+
+```
+
+> ![NOTE]
+> No es necesario que los tests estén dentro de un objeto especial, también podemos crearlo en el mismo objeto donde trabajamos.
+> Podemos correr todos los tests haciendo click derecho en la categoria (1), objeto (2) o categoria de mensajes (3) y apretar `run tests (t)`. O correr un test especifico con click derecho y `send (t)` en algun test (4).
+
+
+### Debugger
+
+¿Qué hacemos cuando un test falla?
+Para verlo con más detalle vamos a modificar la implementación de `Falso negado` de la sig forma:
+```
+negado
+    ⬆Falso    
+```
+Luego al correr los tests vemos nos devuelve una pantalla con ERROR. Luego al hacer OK aparece el debugger.\
+![]()<img src="Imagenes/debugger.png" width="50%">
+
+* (1) se muestra una lista del conjunto de colaboraciones que se fueron enviando hasta el momento del error. Se **lee de Abajo hacia Arriba**.
+
+* (2) Si seleccionamos una colaboración podremos ver aquí el ***método*** relacionado al mensaje que se envío es esa colaboración.
+
+* (3) Es el inspector de quienes son los objetos receptores. Si apreto en `self` puedo ver en (4) el objeto receptor.
+
+
+**restart** : reinicializa la ejecución de lo que estamos debuggeando a partir de la colaboración que tengamos seleccionada (1)
+
+
+**into**: entra a la implementación del mensaje que se esta enviando. (Es como el pasito x pasito)
+
+
+**over**: Envía la colaboración y para en la proxima colaboración correspondiente. (Pasa derecho al siguiente paso/función)
+
+
+**proceed**: Continua con la ejecución (Se salta todo los pasos y pasa directo al resultado)
+
+
+**OBS**-----------------------------------------------------------------------------------------------\
+Desde el debugger podemos modificar la implementación de un método a medida que el método se va ejecutando.
+
+---
+
+## Browser (2da parte)
+
+### Inspector
+Nos permite acceder a un objeto y jugar con él. Para acceder al inspector de un objeto hacemos click derecho sobre el obejto -> `Inspect (i)`
+
+### Colaboradores
+Un objeto puede conocer otros objetos para llevar acabo sus actividades, estos "otros objetos" se los denomina **colaboradores**. Veamos el siguiente ejemplo de una cuenta bancaraia:\
+![]()<img src="Imagenes/CuentaBancaria.png" width="50%">
+
+
+**¿Cómo hacemos para agregar un colaborador?**\
+Podemos hacer click derecho en el objeto `UnaCuentaBancaria` -> `add colaborator` ò tambien haciendo lo siguiente en el método:
+```
+UnaCuentaBancaria
+    colaboratorNames: 'saldo FechaYHoraDeUltimaTransaccion'
+    in: 'Modelo Bancario'
+```
+
+**NOTA**
+- Podemos renombrar un colaborador: click derecho en el objeto -> `rename colaborator`
+- Idem eliminar. Pero SII no se usa en ningún método
+
+
+**TIPOS DE COLABORADORES**\
+* **Internos**: pertenecen al objeto como `saldo`
+* **externos**: Aquellos que recibo cuando me envian un mensaje
+* **Temporales**: aquellos que necesito conocer solo durante la evaluación de un método.
+
+Veamos un ejemplo:
+```
+depositar: unaCantidadDeDinero "esto es un colaborador externo"
+
+    |colaborador1| "Esto es un colaborador temporal"
+
+    colaborador1 := 1.
+    balance ← balance + unaCantidadDeDinero
+    ⬆balance
+```
+
+> [!WARNING]
+> **¿Qué sucede si creamos un colaborador interno llamado *colaborador1*?** Por el momento nada, pero si llegaramos a usar ese *colaborador interno* en `depositar` no se tomaria en cuenta ya que se lo utiliza como un *colab. Temporal*.
+
+
+### Senders e implementors
+
+Podemos ver en el Browser unas pestañitas con estos nombres, ¿para qué sirven?.
+
+* **Senders**: me muestra todos los lugares en donde un mensaje es enviado. \
+    Por ejemplo el mensaje **negado** si clickeamos en su implementación y luego apretamos en senders podemos ver todos los luagres donde se envia este mensaje (en los tests)
+* **Implementors**: me muestra todos los objetos que implementan un mensaje y cómo es su implementación. 
+    Por ejemplo el mensaje **negado** es implementado por Falso y Verdadero.
+
+
+Si hay muchos mensajes entonces senders me ofrecerá opciones para ver los sender de cada mensaje. Idem implementors.\
+De la misma forma podemos ver los senders e implementors en el Debugger.
+
+### Compartir un Modelo
+Dentro del Browser.
+
+
+**EXPORTAR**\
+1. En la categoria que quiero compartir `Algebra de Boole` en (1)
+2. Click en `fileOut` y guardar en la carpeta correspondiente. Esto genera un archivo .st en formato de texto que contiene todos los elementos de la categoria.
+
+
+**IMPORTAR**\
+1. Dentro del panel de categoria de obejtos (1) hago click derecho -> `fileIn`
+2. escribo `Algebra#de#Boole.st` y listo!.
+
+
+Otra forma de hacerlo (MAS FÁCIL) es arrastrar el archivo **`.st`** y lanzarlo en la categoria de objetos (1) -> `FileIn`.
+
+
+### Herramientas adicionales para manipular Objetos
+
+* **Clonar un Objeto**: si quisieramos utilizar las mismas funciones de un objeto pero con distintos datos, podemos clonar el mismo haciendo clik derecho sobre el objeto -> `clone...` y ponerle otro nombre
+
+
+* **Múltiples Browser**: podemos trabajr con distintos browser al mismo tiempo, clik en la pestaña `browse`.
+
+
+* **Agregar un obejto**: Podemos agregar un objeto en una categoria mediante una implementación. Hacemos click en la categoria correspondiente y veremos lo siguiente:\
+![]()<img src="Imagenes/CrearObjeto.png" width="50%">\
+    Si queremos agregar un nuevo objeto solo debemos escribir el nombre del obejto y si tiene algún colaborador agregarlo:
+
+    ```
+    ObjectBuilder create #LaCuentaBAncariaDeMiMujer
+        colaboratorNAmes: 'saldo'
+        in: 'Modelo Bancario'
+    ```
+
+
+    Guardamos (`accept (s)`) y Listo, objeto guardado!\
+    **OBS**: no es necesario escribirlo en (5) tambien podemos escribirlo en nuestro workSpace (6). Un avez escrito en (6) seleccionamos la implementación -> click derecho -> `Do it (d)`
+
+
+* **Renombrar colaborador**: si queremos renombrar un colab. externo o temporal solo debemos seleccionarlo en el método -> click derecho -> **`Rename temporary`** y accept!. Esto cambiara el nombre de todas las colaboraciones con el nombre viejo.
 
 
 
