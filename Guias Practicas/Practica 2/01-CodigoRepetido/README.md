@@ -116,3 +116,79 @@ removeCustomerNamed: aName
 	
 	^ NotFound signal.
 ```
+
+## Tests
+
+
+### Test7 y Test8
+
+```samlltalk
+test07CanNotSuspendAnInvalidCustomer
+	
+	...
+
+	[ customerBook suspendCustomerNamed: 'Ringo Starr'.
+	self fail ]
+		on: CantSuspend 
+		do: [ :anError | 
+			self assert: customerBook numberOfCustomers = 1.
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+```
+
+```smalltalk
+test08CanNotSuspendAnAlreadySuspendedCustomer
+	
+	...
+	
+	[ customerBook suspendCustomerNamed: johnLennon.
+	self fail ]
+		on: CantSuspend 
+		do: [ :anError | 
+			self assert: customerBook numberOfCustomers = 1.
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+```
+
+Esos últimos dos fragemntos comparten similitud. Lo unico que cambia es el argumento que recibe `suspendCustomerNamed:`.
+Primero, ¿Qué hace esta implementación? Verifica que suspender a un cliente no sea posible (Me de error) y que el cliente JohnLennon siga siendo un cliente (Es decir que no se produzca ningún cambio).\
+Refactorizamos el pedazo de código repetido del test7, haremos un `extract method`. Como este pedacito de codígo recibe dos parametros y como es un test que verifica vamos a llamar al nuevo método  -> assertCantSuspendAnCustomerWhenIsSuspended: aName in: customerBook
+
+```smalltalk
+assertCantSuspendACustomerWhenIsSuspended: aName in: customerBook
+
+	^ [ customerBook suspendCustomerNamed: aName.
+	self fail ]
+		on: CantSuspend 
+		do: [ :anError | 
+			self assert: customerBook numberOfCustomers = 1.
+			self assert: (customerBook includesCustomerNamed: 'John Lennon') ]
+```
+
+Luego los tests quedarian
+
+```
+test07CanNotSuspendAnInvalidCustomer
+	
+	| customerBook johnLennon |
+			
+	customerBook := CustomerBook new.
+	johnLennon := 'John Lennon'.
+	customerBook addCustomerNamed: johnLennon.
+	
+	self assertCantSuspendACustomerWhenIsSuspended: 'Ringo Starr' in: customerBook.
+
+
+test08CanNotSuspendAnAlreadySuspendedCustomer
+	
+	| customerBook johnLennon |
+			
+	customerBook := CustomerBook new.
+	johnLennon := 'John Lennon'.
+	customerBook addCustomerNamed: johnLennon.
+	customerBook suspendCustomerNamed: johnLennon.
+	
+	self assertCantSuspendACustomerWhenIsSuspended: johnLennon in: customerBook
+
+```
+
+
+
