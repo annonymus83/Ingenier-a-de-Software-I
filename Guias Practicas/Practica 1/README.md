@@ -15,4 +15,12 @@
 * [Ejercicio 4.3](./Seccion%201/Numeros_Naturales_Romanos.st) -> Numeros naturales Romanos con clonning
 
 
+### Resolución Catedra
 
+* [Ejercicio 4](./Seccion%201/Soluciones-Catedra/)
+
+
+## Sección 2 - Introducción al lenguaje Smalltalk
+
+* [Enunciado](./Seccion%202/Guía%20de%20ejercicios.%20ISW%20I.%20Parte%201.%20Sección%202.pdf)
+* [Solucion](./Seccion%202/README.md)
